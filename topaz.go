@@ -4,10 +4,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
 )
 
 type Manager struct {
@@ -24,25 +21,14 @@ type Response struct {
 const VERSION = "v1.0"
 
 func NewManager(serverUrl, _privateKey string) (*Manager, error) {
-	resp, err := http.Get(serverUrl + "/")
-	if err != nil {
-		return nil, errors.New("invalid topaz server")
-	}
-
-	defer resp.Body.Close()
-	_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, errors.New("invalid topaz server")
-	}
-
 	body := Response{}
-	err = json.Unmarshal(_body, &body)
+	err := GetToStruct(serverUrl+"/", &body)
 	if err != nil {
-		return nil, errors.New("invalid topaz server")
+		return nil, err
 	}
 
 	if body.Msg != "topaz server: "+VERSION {
-		return nil, errors.New("invalid topaz server")
+		return nil, ErrInvalidTopazServer
 	}
 
 	key, err := base64.StdEncoding.DecodeString(_privateKey)
