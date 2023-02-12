@@ -1,10 +1,7 @@
 package topazsdk
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
-	"net/http"
 	"net/url"
 	"strconv"
 )
@@ -38,21 +35,10 @@ func (m *Manager) PullUser(_uid int, _password ...string) (*User, error) {
 		"Signature": {signature},
 	}
 
-	resp, err := http.PostForm(m.topazServer+"/pull-user", form)
-	if err != nil {
-		return nil, ErrNetworkError
-	}
-
-	defer resp.Body.Close()
-	_body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, ErrNetworkError
-	}
-
 	body := Response{}
-	err = json.Unmarshal(_body, &body)
+	err := PostToStruct(m.topazServer+"/pull-user", form, &body)
 	if err != nil {
-		return nil, ErrInvalidTopazServer
+		return nil, err
 	}
 
 	if body.Code != 0 {
