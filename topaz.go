@@ -29,6 +29,7 @@ func NewManager(serverUrl, _privateKey string) (*Manager, error) {
 		return nil, errors.New("invalid topaz server")
 	}
 
+	defer resp.Body.Close()
 	_body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, errors.New("invalid topaz server")
