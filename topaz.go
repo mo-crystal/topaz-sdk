@@ -1,6 +1,9 @@
 package topazsdk
 
 import (
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"io"
@@ -9,7 +12,7 @@ import (
 
 type Manager struct {
 	topazServer string
-	privateKey  string
+	privateKey  rsa.PrivateKey
 }
 
 type Response struct {
@@ -20,7 +23,7 @@ type Response struct {
 
 const VERSION = "v1.0"
 
-func NewManager(serverUrl, privateKey string) (*Manager, error) {
+func NewManager(serverUrl, _privateKey string) (*Manager, error) {
 	resp, err := http.Get(serverUrl + "/")
 	if err != nil {
 		return nil, errors.New("invalid topaz server")
@@ -41,8 +44,18 @@ func NewManager(serverUrl, privateKey string) (*Manager, error) {
 		return nil, errors.New("invalid topaz server")
 	}
 
+	key, err := base64.StdEncoding.DecodeString(_privateKey)
+	if err != nil {
+		return nil, errors.New("invalid private key")
+	}
+
+	privateKey, err := x509.ParsePKCS1PrivateKey(key)
+	if err != nil {
+		return nil, errors.New("invalid private key")
+	}
+
 	return &Manager{
 		topazServer: serverUrl,
-		privateKey:  privateKey,
+		privateKey:  *privateKey,
 	}, nil
 }
