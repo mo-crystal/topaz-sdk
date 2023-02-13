@@ -49,5 +49,6 @@ func NewManager(serverUrl, _privateKey, selfName string) (*Manager, error) {
 	return &Manager{
 		topazServer: serverUrl,
 		privateKey:  *privateKey,
+		selfName:    selfName,
 	}, nil
 }
