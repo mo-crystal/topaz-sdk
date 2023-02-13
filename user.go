@@ -23,7 +23,7 @@ func (m *Manager) PullUser(_uid int, _password ...string) (*User, error) {
 		password = _password[0]
 	}
 
-	signature := Sign(m.topazServer+uid+password, m.privateKey)
+	signature := Sign(m.selfName+uid+password, m.privateKey)
 	if signature == "" {
 		return nil, ErrInvalidParameter
 	}
