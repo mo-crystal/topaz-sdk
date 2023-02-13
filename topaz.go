@@ -10,6 +10,7 @@ import (
 type Manager struct {
 	topazServer string
 	privateKey  rsa.PrivateKey
+	selfName    string
 }
 
 type Response struct {
@@ -20,7 +21,11 @@ type Response struct {
 
 const VERSION = "v1.0"
 
-func NewManager(serverUrl, _privateKey string) (*Manager, error) {
+func NewManager(serverUrl, _privateKey, selfName string) (*Manager, error) {
+	if selfName == "" {
+		return nil, ErrInvalidSelfName
+	}
+
 	body := Response{}
 	err := GetToStruct(serverUrl+"/", &body)
 	if err != nil {

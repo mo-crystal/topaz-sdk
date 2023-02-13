@@ -30,7 +30,7 @@ func (m *Manager) PullUser(_uid int, _password ...string) (*User, error) {
 
 	form := url.Values{
 		"UserId":    {uid},
-		"Server":    {m.topazServer},
+		"Server":    {m.selfName},
 		"Password":  {password},
 		"Signature": {signature},
 	}
