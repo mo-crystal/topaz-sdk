@@ -45,7 +45,8 @@ func (m *Manager) PullUser(_uid int, _password ...string) (*User, error) {
 		return nil, errors.New(body.Msg)
 	}
 
-	user, ok := body.Data.(User)
+	user := User{}
+	ok := CastToStruct(body.Data.(map[string]interface{}), &user)
 	if !ok {
 		return nil, ErrInvalidTopazServer
 	}
